@@ -2,6 +2,7 @@ import { AssetLoader } from './assets.js';
 import { Animal } from './animal.js';
 import { SplatEffect } from './splat.js';
 import { Scene } from './scene.js';
+import { AudioManager } from './audio.js';
 
 const CANVAS_WIDTH = 1200;
 const CANVAS_HEIGHT = 750;
@@ -17,6 +18,7 @@ class Game {
     this.canvas.height = CANVAS_HEIGHT;
 
     this.assets = new AssetLoader();
+    this.audio = new AudioManager();
     this.scene = null;
     this.animals = [];
     this.splatEffects = [];
@@ -58,12 +60,19 @@ class Game {
   }
 
   handleClick(e) {
+    // Init audio on first click (browser requires user gesture)
+    if (!this.audio.ctx) {
+      this.audio.init();
+    }
+    this.audio.resume();
+
     if (this.gameOver) {
       this.restart();
       return;
     }
     if (!this.gameStarted) {
       this.gameStarted = true;
+      this.audio.startMusic();
       return;
     }
 
@@ -74,11 +83,13 @@ class Game {
 
     // Check hits (front-to-back, highest footY first = closest to camera)
     const sorted = [...this.animals].sort((a, b) => b.footY - a.footY);
+    let hit = false;
     for (const animal of sorted) {
       if (animal.hitTest(x, y)) {
         animal.splat();
         this.score += 100;
         this.hits++;
+        hit = true;
 
         // Create splat overlay effect
         const splatType = SplatEffect.randomType();
@@ -90,6 +101,12 @@ class Game {
         ));
         break; // Only hit one animal per click
       }
+    }
+
+    if (hit) {
+      this.audio.playHit();
+    } else {
+      this.audio.playMiss();
     }
   }
 
@@ -109,6 +126,7 @@ class Game {
     if (this.timeLeft <= 0) {
       this.timeLeft = 0;
       this.gameOver = true;
+      this.audio.stopMusic();
       return;
     }
 
@@ -256,6 +274,7 @@ class Game {
     this.spawnTimer = 0;
     this.shotsFired = 0;
     this.hits = 0;
+    this.audio.stopMusic();
     // Pre-spawn some animals
     for (let i = 0; i < 4; i++) this.spawnAnimal();
   }
