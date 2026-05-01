@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Duck Hunt - Animal Splat!</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: #1a1a2e;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      overflow: hidden;
+      font-family: 'Segoe UI', sans-serif;
+    }
+    #gameCanvas {
+      cursor: crosshair;
+      image-rendering: pixelated;
+      border: 2px solid #333;
+    }
+    #loading {
+      position: absolute;
+      color: white;
+      font-size: 24px;
+      text-align: center;
+    }
+    #loading .bar {
+      width: 300px;
+      height: 20px;
+      background: #333;
+      border-radius: 10px;
+      margin-top: 16px;
+      overflow: hidden;
+    }
+    #loading .fill {
+      height: 100%;
+      background: #4ecca3;
+      border-radius: 10px;
+      transition: width 0.2s;
+      width: 0%;
+    }
+  </style>
+</head>
+<body>
+  <div id="loading">
+    <div>Loading assets...</div>
+    <div class="bar"><div class="fill" id="loadBar"></div></div>
+  </div>
+  <canvas id="gameCanvas"></canvas>
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>
