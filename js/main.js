@@ -98,7 +98,7 @@ class Game {
     const x = bounds.left + Math.random() * (bounds.right - bounds.left - 70);
     const y = bounds.top + Math.random() * (bounds.bottom - bounds.top - 70);
     const type = Animal.randomType();
-    this.animals.push(new Animal(x, y, type, this.assets));
+    this.animals.push(new Animal(x, y, type, this.assets, CANVAS_HEIGHT));
   }
 
   update(dt) {
@@ -280,7 +280,7 @@ class Game {
 
     loadingEl.style.display = 'none';
 
-    this.scene = new Scene(CANVAS_WIDTH, CANVAS_HEIGHT, this.assets);
+    this.scene = new Scene(CANVAS_WIDTH, CANVAS_HEIGHT);
 
     // Pre-spawn animals
     for (let i = 0; i < 4; i++) this.spawnAnimal();

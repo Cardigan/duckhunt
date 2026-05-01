@@ -9,13 +9,14 @@ const STATE = {
 };
 
 export class Animal {
-  constructor(x, y, type, assets) {
+  constructor(x, y, type, assets, canvasHeight) {
     this.x = x;
     this.y = y;
     this.type = type;
     this.assets = assets;
-    this.width = 70;
-    this.height = 70;
+    this.canvasHeight = canvasHeight;
+    this.baseWidth = 70;
+    this.baseHeight = 70;
 
     // Hit box is smaller than drawn sprite
     this.hitBoxScale = 0.65;
@@ -26,10 +27,10 @@ export class Animal {
     this.frameInterval = 0.12; // seconds per frame
 
     // Movement
-    this.speed = 40 + Math.random() * 40; // pixels per second
+    this.baseSpeed = 40 + Math.random() * 40; // pixels per second
     this.direction = Math.random() * Math.PI * 2;
-    this.vx = Math.cos(this.direction) * this.speed;
-    this.vy = Math.sin(this.direction) * this.speed * 0.5; // slower vertical for 3/4 view
+    this.vx = Math.cos(this.direction) * this.baseSpeed;
+    this.vy = Math.sin(this.direction) * this.baseSpeed * 0.5; // slower vertical for 3/4 view
     this.facingLeft = this.vx < 0;
 
     // State timers
@@ -37,7 +38,21 @@ export class Animal {
     this.splatFrame = 0;
     this.splatTimer = 0;
 
-    // Depth sorting value (foot position)
+    // Perspective-scaled size (updated each frame)
+    this.updateScale();
+  }
+
+  // Scale by Y position: 0.55 at top, 1.1 at bottom
+  get perspectiveScale() {
+    const t = Math.max(0, Math.min(1, this.y / this.canvasHeight));
+    return 0.55 + t * 0.55;
+  }
+
+  updateScale() {
+    const s = this.perspectiveScale;
+    this.width = this.baseWidth * s;
+    this.height = this.baseHeight * s;
+    this.speed = this.baseSpeed * s;
     this.footY = this.y + this.height;
   }
 
@@ -54,7 +69,7 @@ export class Animal {
         break;
     }
 
-    this.footY = this.y + this.height;
+    this.updateScale();
   }
 
   updateWalking(dt, bounds) {
@@ -65,9 +80,10 @@ export class Animal {
       this.frameIndex = (this.frameIndex + 1) % 8;
     }
 
-    // Move
-    this.x += this.vx * dt;
-    this.y += this.vy * dt;
+    // Move with perspective-adjusted speed
+    const s = this.perspectiveScale;
+    this.x += this.vx * s * dt;
+    this.y += this.vy * s * dt;
 
     // Bounce off walkable bounds
     if (this.x < bounds.left) { this.x = bounds.left; this.vx = Math.abs(this.vx); }
@@ -101,9 +117,9 @@ export class Animal {
       this.frameIndex = 0;
       this.frameTimer = 0;
       this.direction = Math.random() * Math.PI * 2;
-      this.speed = 40 + Math.random() * 40;
-      this.vx = Math.cos(this.direction) * this.speed;
-      this.vy = Math.sin(this.direction) * this.speed * 0.5;
+      this.baseSpeed = 40 + Math.random() * 40;
+      this.vx = Math.cos(this.direction) * this.baseSpeed;
+      this.vy = Math.sin(this.direction) * this.baseSpeed * 0.5;
       this.facingLeft = this.vx < 0;
       this.stateTimer = 2 + Math.random() * 4;
     }

@@ -54,14 +54,7 @@ export class AssetLoader {
       }
     }
 
-    // Background objects
-    const bgObjects = [
-      'grass', 'ground1', 'ground2', 'ground3', 'ground4', 'ground5',
-      'house1', 'house2', 'tree', 'bush',
-    ];
-    for (const obj of bgObjects) {
-      manifest.push({ key: `bg_${obj}`, src: `sprites/background/${obj}.png` });
-    }
+    // Background objects — none needed, background is procedural
 
     return manifest;
   }
