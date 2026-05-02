@@ -10,7 +10,7 @@ export class SplatEffect {
     this.frameInterval = 0.15;
     this.size = 100;
     this.done = false;
-    this.opacity = 0.55;
+    this.opacity = 0.75;
   }
 
   update(dt) {

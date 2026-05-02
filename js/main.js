@@ -4,8 +4,9 @@ import { SplatEffect } from './splat.js';
 import { Scene } from './scene.js';
 import { AudioManager } from './audio.js';
 
-const CANVAS_WIDTH = 1200;
-const CANVAS_HEIGHT = 750;
+const IS_PORTRAIT = window.innerHeight > window.innerWidth;
+const CANVAS_WIDTH  = IS_PORTRAIT ? 562  : 1200;
+const CANVAS_HEIGHT = IS_PORTRAIT ? 1000 : 750;
 const GAME_DURATION = 60;
 const MAX_ANIMALS = 8;
 const SPAWN_INTERVAL = 3;
@@ -162,27 +163,10 @@ class Game {
     // Draw static background
     this.scene.drawBackground(ctx);
 
-    // Collect all depth-sorted entities (animals + front props)
-    const renderList = [];
-
-    for (const animal of this.animals) {
-      renderList.push({ type: 'animal', entity: animal, footY: animal.footY });
-    }
-
-    for (const prop of this.scene.frontProps) {
-      renderList.push({ type: 'prop', entity: prop, footY: prop.footY });
-    }
-
-    // Sort by footY (back to front)
-    renderList.sort((a, b) => a.footY - b.footY);
-
-    // Draw sorted entities
-    for (const item of renderList) {
-      if (item.type === 'animal') {
-        item.entity.draw(ctx);
-      } else {
-        this.scene.drawProp(ctx, item.entity);
-      }
+    // Depth-sort animals (back to front) and draw
+    const sorted = [...this.animals].sort((a, b) => a.footY - b.footY);
+    for (const animal of sorted) {
+      animal.draw(ctx);
     }
 
     // Draw splat effects on top
@@ -299,7 +283,7 @@ class Game {
 
     loadingEl.style.display = 'none';
 
-    this.scene = new Scene(CANVAS_WIDTH, CANVAS_HEIGHT);
+    this.scene = new Scene(CANVAS_WIDTH, CANVAS_HEIGHT, this.assets);
 
     // Pre-spawn animals
     for (let i = 0; i < 4; i++) this.spawnAnimal();

@@ -5,6 +5,7 @@ export class AudioManager {
     this.musicGain = null;
     this.sfxGain = null;
     this.musicPlaying = false;
+    this._musicTimer = null;
   }
 
   init() {
@@ -191,7 +192,7 @@ export class AudioManager {
     }
 
     // Schedule next loop
-    setTimeout(() => this.scheduleMusic(), (loopDuration - 0.1) * 1000);
+    this._musicTimer = setTimeout(() => this.scheduleMusic(), (loopDuration - 0.1) * 1000);
   }
 
   playNote(freq, time, duration, type, volume) {
@@ -254,5 +255,9 @@ export class AudioManager {
 
   stopMusic() {
     this.musicPlaying = false;
+    if (this._musicTimer) {
+      clearTimeout(this._musicTimer);
+      this._musicTimer = null;
+    }
   }
 }

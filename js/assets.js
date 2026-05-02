@@ -54,7 +54,9 @@ export class AssetLoader {
       }
     }
 
-    // Background objects — none needed, background is procedural
+    // Pre-rendered backgrounds
+    manifest.push({ key: 'bg_landscape', src: 'sprites/background/backgroundLandscape.png' });
+    manifest.push({ key: 'bg_phone',     src: 'sprites/background/phoneBackground.png' });
 
     return manifest;
   }
