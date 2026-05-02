@@ -19,9 +19,9 @@ export class AudioManager {
     this.sfxGain.connect(this.ctx.destination);
   }
 
-  resume() {
+  async resume() {
     if (this.ctx?.state === 'suspended') {
-      this.ctx.resume();
+      await this.ctx.resume();
     }
   }
 

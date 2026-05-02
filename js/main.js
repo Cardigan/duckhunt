@@ -4,7 +4,9 @@ import { SplatEffect } from './splat.js';
 import { Scene } from './scene.js';
 import { AudioManager } from './audio.js';
 
-const IS_PORTRAIT = window.innerHeight > window.innerWidth;
+// Only use portrait layout on actual phones (short side ≤ 500px)
+const IS_PORTRAIT = Math.min(window.innerWidth, window.innerHeight) <= 500
+  && window.innerHeight > window.innerWidth;
 const CANVAS_WIDTH  = IS_PORTRAIT ? 562  : 1200;
 const CANVAS_HEIGHT = IS_PORTRAIT ? 1000 : 750;
 const GAME_DURATION = 60;
@@ -60,12 +62,12 @@ class Game {
     };
   }
 
-  handleClick(e) {
+  async handleClick(e) {
     // Init audio on first click (browser requires user gesture)
     if (!this.audio.ctx) {
       this.audio.init();
     }
-    this.audio.resume();
+    await this.audio.resume();
 
     if (this.gameOver) {
       this.restart();
