@@ -10,6 +10,7 @@ export class AudioManager {
 
   init() {
     this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+
     this.musicGain = this.ctx.createGain();
     this.musicGain.gain.value = 0.18;
     this.musicGain.connect(this.ctx.destination);
@@ -17,11 +18,19 @@ export class AudioManager {
     this.sfxGain = this.ctx.createGain();
     this.sfxGain.gain.value = 0.4;
     this.sfxGain.connect(this.ctx.destination);
+
+    // Safari/iOS requires a silent buffer played within the gesture to unlock audio
+    const buf = this.ctx.createBuffer(1, 1, this.ctx.sampleRate);
+    const src = this.ctx.createBufferSource();
+    src.buffer = buf;
+    src.connect(this.ctx.destination);
+    src.start(0);
+    this.ctx.resume();
   }
 
-  async resume() {
+  resume() {
     if (this.ctx?.state === 'suspended') {
-      await this.ctx.resume();
+      this.ctx.resume();
     }
   }
 
@@ -143,6 +152,7 @@ export class AudioManager {
 
   scheduleMusic() {
     if (!this.musicPlaying) return;
+    if (this.ctx.state === 'suspended') this.ctx.resume();
 
     const t = this.ctx.currentTime;
     const bpm = 140;

@@ -62,12 +62,12 @@ class Game {
     };
   }
 
-  async handleClick(e) {
+  handleClick(e) {
     // Init audio on first click (browser requires user gesture)
     if (!this.audio.ctx) {
       this.audio.init();
     }
-    await this.audio.resume();
+    this.audio.resume();
 
     if (this.gameOver) {
       this.restart();
